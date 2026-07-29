@@ -16,11 +16,12 @@ public class TasksController(AppDbContext db) : ControllerBase
     {
         var tasks = await db.Tasks
             .OrderByDescending(t => t.CreatedAt)
-            .Select(t => new TaskResponseDto
+            .Select(t => new TaskResponse
             {
                 Id = t.Id,
                 Title = t.Title,
                 Description = t.Description,
+                Category = t.Category,
                 Status = t.Status.ToString(),
                 Priority = t.Priority.ToString(),
                 DueDate = t.DueDate,
@@ -39,11 +40,12 @@ public class TasksController(AppDbContext db) : ControllerBase
         var task = await db.Tasks.FindAsync(id);
         if (task is null) return NotFound();
 
-        return Ok(new TaskResponseDto
+        return Ok(new TaskResponse
         {
             Id = task.Id,
             Title = task.Title,
             Description = task.Description,
+            Category = task.Category,
             Status = task.Status.ToString(),
             Priority = task.Priority.ToString(),
             DueDate = task.DueDate,
@@ -54,12 +56,13 @@ public class TasksController(AppDbContext db) : ControllerBase
 
     // POST api/tasks
     [HttpPost]
-    public async Task<IActionResult> Create([FromBody] CreateTaskDto dto)
+    public async Task<IActionResult> Create([FromBody] CreateTask dto)
     {
-        var task = new TodoTask
+        var task = new Models.Task
         {
             Title = dto.Title,
             Description = dto.Description,
+            Category = dto.Category,
             Status = dto.Status,
             Priority = dto.Priority,
             DueDate = dto.DueDate,
@@ -70,11 +73,12 @@ public class TasksController(AppDbContext db) : ControllerBase
         db.Tasks.Add(task);
         await db.SaveChangesAsync();
 
-        return CreatedAtAction(nameof(GetById), new { id = task.Id }, new TaskResponseDto
+        return CreatedAtAction(nameof(GetById), new { id = task.Id }, new TaskResponse
         {
             Id = task.Id,
             Title = task.Title,
             Description = task.Description,
+            Category = task.Category,
             Status = task.Status.ToString(),
             Priority = task.Priority.ToString(),
             DueDate = task.DueDate,
@@ -85,13 +89,14 @@ public class TasksController(AppDbContext db) : ControllerBase
 
     // PUT api/tasks/{id}
     [HttpPut("{id:int}")]
-    public async Task<IActionResult> Update(int id, [FromBody] UpdateTaskDto dto)
+    public async Task<IActionResult> Update(int id, [FromBody] UpdateTask dto)
     {
         var task = await db.Tasks.FindAsync(id);
         if (task is null) return NotFound();
 
         task.Title = dto.Title;
         task.Description = dto.Description;
+        task.Category = dto.Category;
         task.Status = dto.Status;
         task.Priority = dto.Priority;
         task.DueDate = dto.DueDate;
