@@ -1,44 +1,115 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using todAI.Api.Data;
 using todAI.Api.DTOs;
+using todAI.Api.Models;
 
 namespace todAI.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class TasksController : ControllerBase
+public class TasksController(AppDbContext db) : ControllerBase
 {
     // GET api/tasks
     [HttpGet]
-    public IActionResult GetAll()
+    public async Task<IActionResult> GetAll()
     {
-        return StatusCode(StatusCodes.Status501NotImplemented);
+        var tasks = await db.Tasks
+            .OrderByDescending(t => t.CreatedAt)
+            .Select(t => new TaskResponseDto
+            {
+                Id = t.Id,
+                Title = t.Title,
+                Description = t.Description,
+                Status = t.Status.ToString(),
+                Priority = t.Priority.ToString(),
+                DueDate = t.DueDate,
+                CreatedAt = t.CreatedAt,
+                UpdatedAt = t.UpdatedAt
+            })
+            .ToListAsync();
+
+        return Ok(tasks);
     }
 
     // GET api/tasks/{id}
     [HttpGet("{id:int}")]
-    public IActionResult GetById(int id)
+    public async Task<IActionResult> GetById(int id)
     {
-        return StatusCode(StatusCodes.Status501NotImplemented);
+        var task = await db.Tasks.FindAsync(id);
+        if (task is null) return NotFound();
+
+        return Ok(new TaskResponseDto
+        {
+            Id = task.Id,
+            Title = task.Title,
+            Description = task.Description,
+            Status = task.Status.ToString(),
+            Priority = task.Priority.ToString(),
+            DueDate = task.DueDate,
+            CreatedAt = task.CreatedAt,
+            UpdatedAt = task.UpdatedAt
+        });
     }
 
     // POST api/tasks
     [HttpPost]
-    public IActionResult Create([FromBody] CreateTaskDto dto)
+    public async Task<IActionResult> Create([FromBody] CreateTaskDto dto)
     {
-        return StatusCode(StatusCodes.Status501NotImplemented);
+        var task = new TodoTask
+        {
+            Title = dto.Title,
+            Description = dto.Description,
+            Status = dto.Status,
+            Priority = dto.Priority,
+            DueDate = dto.DueDate,
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow
+        };
+
+        db.Tasks.Add(task);
+        await db.SaveChangesAsync();
+
+        return CreatedAtAction(nameof(GetById), new { id = task.Id }, new TaskResponseDto
+        {
+            Id = task.Id,
+            Title = task.Title,
+            Description = task.Description,
+            Status = task.Status.ToString(),
+            Priority = task.Priority.ToString(),
+            DueDate = task.DueDate,
+            CreatedAt = task.CreatedAt,
+            UpdatedAt = task.UpdatedAt
+        });
     }
 
     // PUT api/tasks/{id}
     [HttpPut("{id:int}")]
-    public IActionResult Update(int id, [FromBody] UpdateTaskDto dto)
+    public async Task<IActionResult> Update(int id, [FromBody] UpdateTaskDto dto)
     {
-        return StatusCode(StatusCodes.Status501NotImplemented);
+        var task = await db.Tasks.FindAsync(id);
+        if (task is null) return NotFound();
+
+        task.Title = dto.Title;
+        task.Description = dto.Description;
+        task.Status = dto.Status;
+        task.Priority = dto.Priority;
+        task.DueDate = dto.DueDate;
+        task.UpdatedAt = DateTime.UtcNow;
+
+        await db.SaveChangesAsync();
+        return NoContent();
     }
 
     // DELETE api/tasks/{id}
     [HttpDelete("{id:int}")]
-    public IActionResult Delete(int id)
+    public async Task<IActionResult> Delete(int id)
     {
-        return StatusCode(StatusCodes.Status501NotImplemented);
+        var task = await db.Tasks.FindAsync(id);
+        if (task is null) return NotFound();
+
+        db.Tasks.Remove(task);
+        await db.SaveChangesAsync();
+        return NoContent();
     }
 }
