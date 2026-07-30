@@ -62,6 +62,23 @@ function App() {
     setShowForm(true);
   }
 
+  async function handleStatusChange(task: Task, status: Task['status']) {
+    try {
+      setError(null);
+      await taskService.update(task.id, {
+        title: task.title,
+        description: task.description,
+        category: task.category,
+        status,
+        priority: task.priority,
+        dueDate: task.dueDate,
+      });
+      await loadTasks();
+    } catch {
+      setError('Unable to update the task status. Please try again.');
+    }
+  }
+
   return (
     <main className="app-shell">
       <header className="app-header">
@@ -80,7 +97,7 @@ function App() {
         <h2>Your tasks</h2>
         {!loading && <span>{tasks.length} {tasks.length === 1 ? 'task' : 'tasks'}</span>}
       </div>
-      <TaskList tasks={tasks} loading={loading} onEdit={handleEdit} onDelete={handleDelete} />
+      <TaskList tasks={tasks} loading={loading} onEdit={handleEdit} onDelete={handleDelete} onStatusChange={handleStatusChange} />
 
       {showForm && editingTask && <TaskForm initialValues={editingTask} onSubmit={handleSubmit} onCancel={closeForm} />}
     </main>

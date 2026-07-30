@@ -6,6 +6,7 @@ type TaskListProps = {
   loading: boolean;
   onDelete: (id: number) => Promise<void>;
   onEdit: (task: Task) => void;
+  onStatusChange: (task: Task, status: Task['status']) => Promise<void>;
   tasks: Task[];
 };
 
@@ -24,7 +25,7 @@ const priorityOrder: Record<Task['priority'], number> = {
   High: 2,
 };
 
-function TaskList({ loading, onDelete, onEdit, tasks }: TaskListProps) {
+function TaskList({ loading, onDelete, onEdit, onStatusChange, tasks }: TaskListProps) {
   const [sortColumn, setSortColumn] = useState<SortColumn>('dueDate');
   const [sortDirection, setSortDirection] = useState<SortDirection>('asc');
 
@@ -110,7 +111,7 @@ function TaskList({ loading, onDelete, onEdit, tasks }: TaskListProps) {
             </tr>
           </thead>
           <tbody>
-            {sortedTasks.map((task) => <TaskCard key={task.id} task={task} onEdit={onEdit} onDelete={onDelete} />)}
+            {sortedTasks.map((task) => <TaskCard key={task.id} task={task} onEdit={onEdit} onDelete={onDelete} onStatusChange={onStatusChange} />)}
           </tbody>
         </table>
       </div>
