@@ -1,10 +1,15 @@
 using todAI.Api.Models;
+using System.ComponentModel.DataAnnotations;
 
 namespace todAI.Api.DTOs;
 
 public class CreateTask
 {
+    [Required]
+    [MaxLength(200)]
     public string Title { get; set; } = string.Empty;
+
+    [MaxLength(2000)]
     public string? Description { get; set; }
     public string? Category { get; set; }
     public Status Status { get; set; } = Status.Todo;
@@ -14,7 +19,11 @@ public class CreateTask
 
 public class UpdateTask
 {
+    [Required]
+    [MaxLength(200)]
     public string Title { get; set; } = string.Empty;
+
+    [MaxLength(2000)]
     public string? Description { get; set; }
     public string? Category { get; set; }
     public Status Status { get; set; }

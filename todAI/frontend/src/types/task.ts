@@ -5,6 +5,7 @@ export interface Task {
   id: number;
   title: string;
   description: string | null;
+  category: string | null;
   status: TodoStatus;
   priority: TaskPriority;
   dueDate: string | null; // ISO 8601 date string
@@ -15,6 +16,7 @@ export interface Task {
 export interface CreateTaskPayload {
   title: string;
   description?: string | null;
+  category?: string | null;
   status?: TodoStatus;
   priority?: TaskPriority;
   dueDate?: string | null;
@@ -23,6 +25,7 @@ export interface CreateTaskPayload {
 export interface UpdateTaskPayload {
   title: string;
   description?: string | null;
+  category?: string | null;
   status: TodoStatus;
   priority: TaskPriority;
   dueDate?: string | null;
