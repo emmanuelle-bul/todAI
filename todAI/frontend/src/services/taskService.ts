@@ -13,8 +13,8 @@ export const taskService = {
   create: (payload: CreateTaskPayload): Promise<Task> =>
     axios.post<Task>(BASE, payload).then((r) => r.data),
 
-  update: (id: number, payload: UpdateTaskPayload): Promise<Task> =>
-    axios.put<Task>(`${BASE}/${id}`, payload).then((r) => r.data),
+  update: (id: number, payload: UpdateTaskPayload): Promise<void> =>
+    axios.put(`${BASE}/${id}`, payload).then(() => undefined),
 
   remove: (id: number): Promise<void> =>
     axios.delete(`${BASE}/${id}`).then(() => undefined),

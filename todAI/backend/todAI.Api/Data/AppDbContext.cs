@@ -5,11 +5,11 @@ namespace todAI.Api.Data;
 
 public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options)
 {
-    public DbSet<TodoTask> Tasks { get; set; }
+    public DbSet<Models.Task> Tasks { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<TodoTask>(entity =>
+        modelBuilder.Entity<Models.Task>(entity =>
         {
             entity.HasKey(t => t.Id);
             entity.Property(t => t.Title).IsRequired().HasMaxLength(200);
