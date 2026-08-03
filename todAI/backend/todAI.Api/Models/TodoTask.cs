@@ -1,0 +1,28 @@
+namespace todAI.Api.Models;
+
+public enum Status
+{
+    Todo,
+    InProgress,
+    Done
+}
+
+public enum Priority
+{
+    Low,
+    Medium,
+    High
+}
+
+public class Task
+{
+    public int Id { get; set; }
+    public string Title { get; set; } = string.Empty;
+    public string? Description { get; set; }
+    public string? Category { get; set; }
+    public Status Status { get; set; } = Status.Todo;
+    public Priority Priority { get; set; } = Priority.Medium;
+    public long? DueDate { get; set; }
+    public long CreatedAt { get; set; } = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+    public long UpdatedAt { get; set; } = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+}
