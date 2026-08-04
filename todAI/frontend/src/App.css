@@ -475,7 +475,9 @@ textarea {
 }
 
 .task-actions-cell {
+  width: 1%;
   text-align: right;
+  white-space: nowrap;
 }
 
 .task-actions {
@@ -483,8 +485,13 @@ textarea {
   align-items: center;
   justify-content: flex-end;
   flex-wrap: nowrap;
-  gap: 8px;
-  min-width: 92px;
+  gap: 4px;
+  min-width: 0;
+}
+
+.task-table th:nth-child(3),
+.task-table td:nth-child(3) {
+  min-width: 132px;
 }
 
 .button-icon-button {
