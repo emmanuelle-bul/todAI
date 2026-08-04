@@ -55,7 +55,7 @@ public class TasksController(AppDbContext db) : ControllerBase
             Category = dto.Category,
             Status = dto.Status,
             Priority = dto.Priority,
-            DueDate = dto.DueDate,
+            DueDate = dto.DueDate == 0 ? null : dto.DueDate,
             CreatedAt = DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
             UpdatedAt = DateTimeOffset.UtcNow.ToUnixTimeSeconds()
         };
