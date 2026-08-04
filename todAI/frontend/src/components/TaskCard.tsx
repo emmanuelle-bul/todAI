@@ -90,8 +90,26 @@ function TaskCard({ task, onDelete, onEdit, onStatusChange }: TaskCardProps) {
         <td>{task.dueDate != null ? formatDate(task.dueDate) : <span className="table-muted">No due date</span>}</td>
         <td className="task-actions-cell">
           <div className="task-actions">
-            <button className="button button-secondary button-small" type="button" onClick={() => onEdit(task)}>Edit</button>
-            <button className="button button-danger-quiet button-small" type="button" onClick={() => setConfirmingDelete(true)}>Delete</button>
+            <button
+              className="button button-small button-icon-button button-edit-icon"
+              type="button"
+              onClick={() => onEdit(task)}
+              aria-label={`Edit ${task.title}`}
+              title="Edit"
+            >
+              <span className="button-icon-glyph" aria-hidden="true">&#9998;</span>
+              <span className="visually-hidden">Edit</span>
+            </button>
+            <button
+              className="button button-small button-icon-button button-delete-icon"
+              type="button"
+              onClick={() => setConfirmingDelete(true)}
+              aria-label={`Delete ${task.title}`}
+              title="Delete"
+            >
+              <span className="button-icon-glyph" aria-hidden="true">&times;</span>
+              <span className="visually-hidden">Delete</span>
+            </button>
           </div>
         </td>
       </tr>

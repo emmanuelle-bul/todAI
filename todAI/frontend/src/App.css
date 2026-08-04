@@ -203,6 +203,135 @@ textarea {
   font-size: 14px;
 }
 
+.tasks-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 140px;
+  gap: 10px;
+  align-items: start;
+}
+
+.tasks-table-area {
+  min-width: 0;
+}
+
+.stats-panel {
+  position: sticky;
+  top: 16px;
+  padding: 10px;
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  background: var(--bg);
+  box-shadow: var(--shadow);
+}
+
+.stats-panel h3 {
+  margin: 4px 0 10px;
+  color: var(--text-h);
+  font-size: 15px;
+}
+
+.status-donut {
+  --todo-end: 0%;
+  --in-progress-end: 0%;
+
+  width: 94px;
+  height: 94px;
+  margin: 0 auto 12px;
+  border-radius: 50%;
+  background:
+    conic-gradient(
+      #f3c46d 0 var(--todo-end),
+      #84c7ee var(--todo-end) var(--in-progress-end),
+      #82d39a var(--in-progress-end) 100%
+    );
+  display: grid;
+  place-items: center;
+}
+
+.status-donut-center {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  display: grid;
+  place-items: center;
+  text-align: center;
+}
+
+.status-donut-center strong {
+  display: block;
+  color: var(--text-h);
+  font-size: 15px;
+  line-height: 1;
+}
+
+.status-donut-center span {
+  color: var(--text);
+  font-size: 9px;
+}
+
+.status-breakdown {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+
+.status-item-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  margin-bottom: 4px;
+}
+
+.status-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-h);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.status-values {
+  color: var(--text);
+  font-size: 10px;
+}
+
+.status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+}
+
+.status-track {
+  height: 6px;
+  border-radius: 999px;
+  background: var(--code-bg);
+  overflow: hidden;
+}
+
+.status-fill {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+}
+
+.status-color-todo {
+  background: #f3c46d;
+}
+
+.status-color-progress {
+  background: #84c7ee;
+}
+
+.status-color-done {
+  background: #82d39a;
+}
+
 .task-table-scroll {
   overflow-x: auto;
   border: 2px solid var(--border);
@@ -213,13 +342,13 @@ textarea {
 
 .task-table {
   width: 100%;
-  min-width: 720px;
+  min-width: 0;
   border-collapse: collapse;
   text-align: left;
 }
 
 .task-table th {
-  padding: 13px 16px;
+  padding: 12px 10px;
   border-bottom: 2px solid var(--border);
   color: var(--text-h);
   background: var(--code-bg);
@@ -265,7 +394,7 @@ textarea {
 }
 
 .task-table td {
-  padding: 16px;
+  padding: 12px 10px;
   border-bottom: 1px solid var(--border);
   color: var(--text);
   font-size: 14px;
@@ -278,8 +407,8 @@ textarea {
 }
 
 .task-status-select {
-  min-width: 124px;
-  padding: 7px 32px 7px 10px;
+  min-width: 92px;
+  padding: 7px 24px 7px 8px;
   font-size: 13px;
   font-weight: 650;
   border-radius: 999px;
@@ -320,7 +449,7 @@ textarea {
 }
 
 .task-name-cell {
-  min-width: 220px;
+  min-width: 140px;
 }
 
 .task-name-cell strong {
@@ -353,10 +482,39 @@ textarea {
   display: inline-flex;
   align-items: center;
   justify-content: flex-end;
-  flex-wrap: wrap;
-  justify-content: flex-end;
+  flex-wrap: nowrap;
   gap: 8px;
-  min-width: 140px;
+  min-width: 92px;
+}
+
+.button-icon-button {
+  width: auto;
+  height: auto;
+  padding: 0 2px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.button-icon-glyph {
+  font-size: 22px;
+  line-height: 1;
+  font-weight: 700;
+}
+
+.button-edit-icon {
+  border-color: transparent;
+  background: transparent;
+  color: #1f8f4e;
+}
+
+.button-delete-icon {
+  border-color: transparent;
+  background: transparent;
+  color: #b42318;
 }
 
 .badge {
@@ -482,6 +640,14 @@ textarea {
   .header-actions {
     justify-content: flex-start;
     width: 100%;
+  }
+
+  .tasks-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .stats-panel {
+    position: static;
   }
 
   .task-form {

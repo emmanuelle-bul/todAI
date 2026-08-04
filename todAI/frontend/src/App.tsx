@@ -7,6 +7,14 @@ import './App.css';
 
 type TaskFilter = 'all' | 'today' | 'upcoming' | 'completed';
 
+type StatusKey = 'Todo' | 'InProgress' | 'Done';
+
+const statusMeta: Record<StatusKey, { label: string; className: string }> = {
+  Todo: { label: 'To do', className: 'status-color-todo' },
+  InProgress: { label: 'In progress', className: 'status-color-progress' },
+  Done: { label: 'Done', className: 'status-color-done' },
+};
+
 function getTodayUnixRange(): { start: number; end: number } {
   const now = new Date();
   const startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
@@ -109,6 +117,35 @@ function App() {
     return tasks.filter((task) => task.status === 'Done');
   }, [activeFilter, tasks]);
 
+  const statusStats = useMemo(() => {
+    const counts: Record<StatusKey, number> = {
+      Todo: 0,
+      InProgress: 0,
+      Done: 0,
+    };
+
+    for (const task of filteredTasks) {
+      counts[task.status] += 1;
+    }
+
+    const total = filteredTasks.length;
+    const getPercent = (count: number) => (total === 0 ? 0 : Math.round((count / total) * 100));
+
+    const todoPercent = getPercent(counts.Todo);
+    const inProgressPercent = getPercent(counts.InProgress);
+    const donePercent = total === 0 ? 0 : Math.max(0, 100 - todoPercent - inProgressPercent);
+
+    return {
+      total,
+      counts,
+      percentages: {
+        Todo: todoPercent,
+        InProgress: inProgressPercent,
+        Done: donePercent,
+      },
+    };
+  }, [filteredTasks]);
+
   return (
     <main className="app-shell">
       <header className="app-header">
@@ -159,7 +196,45 @@ function App() {
         <h2>Your tasks</h2>
         {!loading && <span>{filteredTasks.length} {filteredTasks.length === 1 ? 'task' : 'tasks'}</span>}
       </div>
-      <TaskList tasks={filteredTasks} loading={loading} onEdit={handleEdit} onDelete={handleDelete} onStatusChange={handleStatusChange} />
+
+      <div className="tasks-layout">
+        <div className="tasks-table-area">
+          <TaskList tasks={filteredTasks} loading={loading} onEdit={handleEdit} onDelete={handleDelete} onStatusChange={handleStatusChange} />
+        </div>
+
+        <aside className="stats-panel" aria-label="Task status statistics">
+          <div
+            className="status-donut"
+            aria-hidden="true"
+            style={{
+              '--todo-end': `${statusStats.percentages.Todo}%`,
+              '--in-progress-end': `${statusStats.percentages.Todo + statusStats.percentages.InProgress}%`,
+            } as React.CSSProperties}
+          >
+            <div className="status-donut-center" />
+          </div>
+
+          <ul className="status-breakdown" aria-label="Task counts by status">
+            {(['Todo', 'InProgress', 'Done'] as const).map((status) => (
+              <li key={status} className="status-item">
+                <div className="status-item-head">
+                  <span className="status-label">
+                    <span className={`status-dot ${statusMeta[status].className}`} aria-hidden="true" />
+                    {statusMeta[status].label}
+                  </span>
+                  <span className="status-values">{statusStats.counts[status]} ({statusStats.percentages[status]}%)</span>
+                </div>
+                <div className="status-track" aria-hidden="true">
+                  <span
+                    className={`status-fill ${statusMeta[status].className}`}
+                    style={{ width: `${statusStats.percentages[status]}%` }}
+                  />
+                </div>
+              </li>
+            ))}
+          </ul>
+        </aside>
+      </div>
 
       {showForm && editingTask && <TaskForm initialValues={editingTask} onSubmit={handleSubmit} onCancel={closeForm} />}
     </main>
