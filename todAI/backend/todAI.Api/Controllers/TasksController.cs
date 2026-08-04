@@ -10,27 +10,28 @@ namespace todAI.Api.Controllers;
 [Route("api/[controller]")]
 public class TasksController(AppDbContext db) : ControllerBase
 {
+    private static TaskResponse MapToResponse(Models.Task task) => new()
+    {
+        Id = task.Id,
+        Title = task.Title,
+        Description = task.Description,
+        Category = task.Category,
+        Status = task.Status.ToString(),
+        Priority = task.Priority.ToString(),
+        DueDate = task.DueDate,
+        CreatedAt = task.CreatedAt,
+        UpdatedAt = task.UpdatedAt
+    };
+
     // GET api/tasks
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
         var tasks = await db.Tasks
             .OrderByDescending(t => t.CreatedAt)
-            .Select(t => new TaskResponse
-            {
-                Id = t.Id,
-                Title = t.Title,
-                Description = t.Description,
-                Category = t.Category,
-                Status = t.Status.ToString(),
-                Priority = t.Priority.ToString(),
-                DueDate = t.DueDate,
-                CreatedAt = t.CreatedAt,
-                UpdatedAt = t.UpdatedAt
-            })
             .ToListAsync();
 
-        return Ok(tasks);
+        return Ok(tasks.Select(MapToResponse));
     }
 
     // GET api/tasks/{id}
@@ -40,18 +41,7 @@ public class TasksController(AppDbContext db) : ControllerBase
         var task = await db.Tasks.FindAsync(id);
         if (task is null) return NotFound();
 
-        return Ok(new TaskResponse
-        {
-            Id = task.Id,
-            Title = task.Title,
-            Description = task.Description,
-            Category = task.Category,
-            Status = task.Status.ToString(),
-            Priority = task.Priority.ToString(),
-            DueDate = task.DueDate,
-            CreatedAt = task.CreatedAt,
-            UpdatedAt = task.UpdatedAt
-        });
+        return Ok(MapToResponse(task));
     }
 
     // POST api/tasks
@@ -66,25 +56,14 @@ public class TasksController(AppDbContext db) : ControllerBase
             Status = dto.Status,
             Priority = dto.Priority,
             DueDate = dto.DueDate,
-            CreatedAt = DateTime.UtcNow,
-            UpdatedAt = DateTime.UtcNow
+            CreatedAt = DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
+            UpdatedAt = DateTimeOffset.UtcNow.ToUnixTimeSeconds()
         };
 
         db.Tasks.Add(task);
         await db.SaveChangesAsync();
 
-        return CreatedAtAction(nameof(GetById), new { id = task.Id }, new TaskResponse
-        {
-            Id = task.Id,
-            Title = task.Title,
-            Description = task.Description,
-            Category = task.Category,
-            Status = task.Status.ToString(),
-            Priority = task.Priority.ToString(),
-            DueDate = task.DueDate,
-            CreatedAt = task.CreatedAt,
-            UpdatedAt = task.UpdatedAt
-        });
+        return CreatedAtAction(nameof(GetById), new { id = task.Id }, MapToResponse(task));
     }
 
     // PUT api/tasks/{id}
@@ -100,7 +79,7 @@ public class TasksController(AppDbContext db) : ControllerBase
         task.Status = dto.Status;
         task.Priority = dto.Priority;
         task.DueDate = dto.DueDate;
-        task.UpdatedAt = DateTime.UtcNow;
+        task.UpdatedAt = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
 
         await db.SaveChangesAsync();
         return NoContent();

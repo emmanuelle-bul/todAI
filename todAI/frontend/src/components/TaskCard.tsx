@@ -15,8 +15,18 @@ const statusLabels = {
   Done: 'Done',
 };
 
-function formatDate(value: string) {
-  return new Intl.DateTimeFormat(undefined, { day: 'numeric', month: 'short', year: 'numeric' }).format(new Date(value));
+function formatDate(value: number | string | null | undefined) {
+  const normalized = Number(value);
+  if (!Number.isFinite(normalized)) {
+    return 'No due date';
+  }
+
+  const date = new Date(normalized * 1000);
+  if (Number.isNaN(date.getTime())) {
+    return 'No due date';
+  }
+
+  return new Intl.DateTimeFormat(undefined, { day: 'numeric', month: 'short', year: 'numeric' }).format(date);
 }
 
 function TaskCard({ task, onDelete, onEdit, onStatusChange }: TaskCardProps) {
@@ -77,7 +87,7 @@ function TaskCard({ task, onDelete, onEdit, onStatusChange }: TaskCardProps) {
           </select>
         </td>
         <td><span className={`badge badge-priority priority-${task.priority}`}>{task.priority}</span></td>
-        <td>{task.dueDate ? formatDate(task.dueDate) : <span className="table-muted">No due date</span>}</td>
+        <td>{task.dueDate != null ? formatDate(task.dueDate) : <span className="table-muted">No due date</span>}</td>
         <td className="task-actions-cell">
           <div className="task-actions">
             <button className="button button-secondary button-small" type="button" onClick={() => onEdit(task)}>Edit</button>

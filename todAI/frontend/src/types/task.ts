@@ -8,9 +8,9 @@ export interface Task {
   category: string | null;
   status: TodoStatus;
   priority: TaskPriority;
-  dueDate: string | null; // ISO 8601 date string
-  createdAt: string;
-  updatedAt: string;
+  dueDate: number | null;
+  createdAt: number;
+  updatedAt: number;
 }
 
 export interface CreateTaskPayload {
@@ -19,7 +19,7 @@ export interface CreateTaskPayload {
   category?: string | null;
   status?: TodoStatus;
   priority?: TaskPriority;
-  dueDate?: string | null;
+  dueDate?: number | null;
 }
 
 export interface UpdateTaskPayload {
@@ -28,5 +28,5 @@ export interface UpdateTaskPayload {
   category?: string | null;
   status: TodoStatus;
   priority: TaskPriority;
-  dueDate?: string | null;
+  dueDate?: number | null;
 }

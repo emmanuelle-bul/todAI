@@ -14,7 +14,7 @@ public class CreateTask
     public string? Category { get; set; }
     public Status Status { get; set; } = Status.Todo;
     public Priority Priority { get; set; } = Priority.Medium;
-    public DateTime? DueDate { get; set; }
+    public long? DueDate { get; set; }
 }
 
 public class UpdateTask
@@ -28,7 +28,7 @@ public class UpdateTask
     public string? Category { get; set; }
     public Status Status { get; set; }
     public Priority Priority { get; set; }
-    public DateTime? DueDate { get; set; }
+    public long? DueDate { get; set; }
 }
 
 public class TaskResponse
@@ -39,7 +39,7 @@ public class TaskResponse
     public string? Category { get; set; }
     public string Status { get; set; } = string.Empty;
     public string Priority { get; set; } = string.Empty;
-    public DateTime? DueDate { get; set; }
-    public DateTime CreatedAt { get; set; }
-    public DateTime UpdatedAt { get; set; }
+    public long? DueDate { get; set; }
+    public long CreatedAt { get; set; }
+    public long UpdatedAt { get; set; }
 }

@@ -45,13 +45,13 @@ function TaskList({ loading, onDelete, onEdit, onStatusChange, tasks }: TaskList
       }
 
       if (sortColumn === 'dueDate') {
-        const aDate = a.dueDate ? Date.parse(a.dueDate) : Number.POSITIVE_INFINITY;
-        const bDate = b.dueDate ? Date.parse(b.dueDate) : Number.POSITIVE_INFINITY;
+        const aDate = a.dueDate ?? Number.POSITIVE_INFINITY;
+        const bDate = b.dueDate ?? Number.POSITIVE_INFINITY;
         const byDueDate = (aDate - bDate) * direction;
         if (byDueDate !== 0) return byDueDate;
       }
 
-      return Date.parse(b.createdAt) - Date.parse(a.createdAt);
+      return (b.createdAt ?? 0) - (a.createdAt ?? 0);
     });
   }, [tasks, sortColumn, sortDirection]);
 

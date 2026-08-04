@@ -28,6 +28,35 @@ const emptyValues: FormValues = {
   dueDate: '',
 };
 
+function toDateInputValue(unixSeconds: number): string {
+  const normalized = Number(unixSeconds);
+  if (!Number.isFinite(normalized)) return '';
+
+  const date = new Date(normalized * 1000);
+  if (Number.isNaN(date.getTime())) return '';
+
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
+function toUnixSeconds(value: string): number | null {
+  if (!value) return null;
+
+  const [year, month, day] = value.split('-').map(Number);
+  if ([year, month, day].some((part) => !Number.isFinite(part))) {
+    return null;
+  }
+
+  const date = new Date(year, month - 1, day);
+  if (Number.isNaN(date.getTime())) {
+    return null;
+  }
+
+  return Math.floor(date.getTime() / 1000);
+}
+
 function toFormValues(task?: Task | null): FormValues {
   if (!task) return emptyValues;
 
@@ -37,7 +66,7 @@ function toFormValues(task?: Task | null): FormValues {
     category: task.category ?? '',
     status: task.status,
     priority: task.priority,
-    dueDate: task.dueDate ? task.dueDate.slice(0, 10) : '',
+    dueDate: task.dueDate != null ? toDateInputValue(task.dueDate) : '',
   };
 }
 
@@ -88,7 +117,7 @@ function TaskForm({ initialValues, onCancel, onSubmit }: TaskFormProps) {
         category: values.category.trim() || null,
         status: values.status,
         priority: values.priority,
-        dueDate: values.dueDate || null,
+        dueDate: toUnixSeconds(values.dueDate),
       });
     } catch (error) {
       if (axios.isAxiosError(error) && error.response?.status === 400) {

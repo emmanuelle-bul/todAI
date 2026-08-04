@@ -22,7 +22,7 @@ public class Task
     public string? Category { get; set; }
     public Status Status { get; set; } = Status.Todo;
     public Priority Priority { get; set; } = Priority.Medium;
-    public DateTime? DueDate { get; set; }
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-    public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
+    public long? DueDate { get; set; }
+    public long CreatedAt { get; set; } = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+    public long UpdatedAt { get; set; } = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
 }
