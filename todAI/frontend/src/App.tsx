@@ -1,9 +1,22 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import TaskForm from './components/TaskForm';
 import TaskList from './components/TaskList';
 import { taskService } from './services/taskService';
 import type { CreateTaskPayload, Task, UpdateTaskPayload } from './types/task';
 import './App.css';
+
+type TaskFilter = 'all' | 'today' | 'upcoming' | 'completed';
+
+function getTodayUnixRange(): { start: number; end: number } {
+  const now = new Date();
+  const startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const endDate = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999);
+
+  return {
+    start: Math.floor(startDate.getTime() / 1000),
+    end: Math.floor(endDate.getTime() / 1000),
+  };
+}
 
 function App() {
   const [tasks, setTasks] = useState<Task[]>([]);
@@ -11,6 +24,7 @@ function App() {
   const [error, setError] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
+  const [activeFilter, setActiveFilter] = useState<TaskFilter>('all');
 
   async function loadTasks() {
     setLoading(true);
@@ -79,6 +93,22 @@ function App() {
     }
   }
 
+  const filteredTasks = useMemo(() => {
+    if (activeFilter === 'all') return tasks;
+
+    const { start, end } = getTodayUnixRange();
+
+    if (activeFilter === 'today') {
+      return tasks.filter((task) => task.dueDate != null && task.dueDate >= start && task.dueDate <= end);
+    }
+
+    if (activeFilter === 'upcoming') {
+      return tasks.filter((task) => task.dueDate == null || task.dueDate > end);
+    }
+
+    return tasks.filter((task) => task.status === 'Done');
+  }, [activeFilter, tasks]);
+
   return (
     <main className="app-shell">
       <header className="app-header">
@@ -86,7 +116,39 @@ function App() {
           <p className="eyebrow">Personal task manager</p>
           <h1>todAI</h1>
         </div>
-        {!showForm && <button className="button button-primary add-task-button" type="button" onClick={openCreateForm}>Add task</button>}
+        {!showForm && (
+          <div className="header-actions" role="group" aria-label="Task filters and actions">
+            <button
+              className={`button button-secondary button-filter ${activeFilter === 'today' ? 'button-filter-active' : ''}`}
+              type="button"
+              onClick={() => setActiveFilter('today')}
+            >
+              Today
+            </button>
+            <button
+              className={`button button-secondary button-filter ${activeFilter === 'upcoming' ? 'button-filter-active' : ''}`}
+              type="button"
+              onClick={() => setActiveFilter('upcoming')}
+            >
+              Upcoming
+            </button>
+            <button
+              className={`button button-secondary button-filter ${activeFilter === 'all' ? 'button-filter-active' : ''}`}
+              type="button"
+              onClick={() => setActiveFilter('all')}
+            >
+              All Tasks
+            </button>
+            <button
+              className={`button button-secondary button-filter ${activeFilter === 'completed' ? 'button-filter-active' : ''}`}
+              type="button"
+              onClick={() => setActiveFilter('completed')}
+            >
+              Completed
+            </button>
+            <button className="button button-primary add-task-button" type="button" onClick={openCreateForm}>Add task</button>
+          </div>
+        )}
       </header>
 
       {showForm && !editingTask && <TaskForm initialValues={null} onSubmit={handleSubmit} onCancel={closeForm} />}
@@ -95,9 +157,9 @@ function App() {
 
       <div className="list-header">
         <h2>Your tasks</h2>
-        {!loading && <span>{tasks.length} {tasks.length === 1 ? 'task' : 'tasks'}</span>}
+        {!loading && <span>{filteredTasks.length} {filteredTasks.length === 1 ? 'task' : 'tasks'}</span>}
       </div>
-      <TaskList tasks={tasks} loading={loading} onEdit={handleEdit} onDelete={handleDelete} onStatusChange={handleStatusChange} />
+      <TaskList tasks={filteredTasks} loading={loading} onEdit={handleEdit} onDelete={handleDelete} onStatusChange={handleStatusChange} />
 
       {showForm && editingTask && <TaskForm initialValues={editingTask} onSubmit={handleSubmit} onCancel={closeForm} />}
     </main>

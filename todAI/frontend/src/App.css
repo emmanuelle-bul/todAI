@@ -102,6 +102,24 @@ select:focus-visible {
   white-space: nowrap;
 }
 
+.header-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.button-filter {
+  white-space: nowrap;
+}
+
+.button-filter-active {
+  border-color: var(--accent);
+  background: var(--accent-bg);
+  color: var(--accent);
+}
+
 .task-form-panel {
   margin: 28px 0 36px;
   padding: 26px;
@@ -318,7 +336,7 @@ textarea {
   color: var(--text);
   font-size: 13px;
   -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
+  line-clamp: 2;
 }
 
 .table-muted {
@@ -459,6 +477,11 @@ textarea {
 
   .app-header h1 {
     font-size: 36px;
+  }
+
+  .header-actions {
+    justify-content: flex-start;
+    width: 100%;
   }
 
   .task-form {
